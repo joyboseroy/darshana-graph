@@ -62,36 +62,85 @@ def load_all_corpus_records():
     return records
 
 
+# Some traditions (Buddhism, parts of Jainism) store their primary content
+# directly in the top-level "text" field rather than in a commentaries list
+# with a named commentator/school, since these are root texts being read
+# directly rather than verses with attached named commentary. Map each
+# Sanskrit concept to known Pali/Jain equivalents so a search for "atman"
+# also finds the Theravada discussion of the same concept under "anatta".
+CONCEPT_CROSS_TRADITION_TERMS = {
+    "atman": ["atman", "anatta", "anatman"],
+    "brahman": ["brahman"],
+    "moksha": ["moksha", "nibbana", "nirvana", "kevala"],
+    "karma": ["karma", "kamma"],
+    "dharma": ["dharma", "dhamma"],
+    "maya": ["maya"],
+    "jiva": ["jiva"],
+}
+
+# Traditions/sources where content lives in top-level "text" rather than
+# commentaries, with a fixed school label to attribute that text to.
+# Source values confirmed directly from each corpus file rather than guessed.
+TEXT_FIELD_SCHOOL_MAP = {
+    # Buddhism: corpus/buddhism.json and buddhism_philosophical_subset.json
+    "sn_nikaya": "theravada",
+    "kn_sutta_nipata_nikaya": "theravada",
+    "kn_khuddakapatha_nikaya": "theravada",
+    "kn_dhammapada_nikaya": "theravada",
+    "kn_itivuttaka_nikaya": "theravada",
+    "kn_udana_nikaya": "theravada",
+    # Jainism: corpus/jainism.json and tattvartha_sutra.json
+    "sutrakritanga": "jain_common",
+    "acaranga_sutra": "jain_common",
+    "tattvartha_sutra": "jain_common",
+}
+
+
 def passages_mentioning_concept(records, concept, window_chars=400):
     """
     Find passages (verse text or commentary text) that mention the concept
     by name, grouped by school. Returns {school: [passage_text, ...]}.
+
+    Searches both:
+      1. commentaries[].text, for traditions that use named commentators
+         (the original behavior)
+      2. top-level "text", for traditions (Buddhism, Jainism) that store
+         primary content directly rather than via commentaries, using a
+         cross-tradition term list so e.g. searching "atman" also finds
+         the Theravada discussion of "anatta"
     """
-    concept_pattern = re.compile(re.escape(concept), re.IGNORECASE)
+    search_terms = CONCEPT_CROSS_TRADITION_TERMS.get(concept.lower(), [concept])
+    concept_pattern = re.compile("|".join(re.escape(t) for t in search_terms), re.IGNORECASE)
     by_school = defaultdict(list)
 
     for r in records:
-        verse_text = r.get("text", "") or ""
-
+        # Path 1: commentaries field (Vedanta-style named commentary)
         for c in r.get("commentaries", []) or []:
             comm_text = c.get("text", "") or ""
             school = c.get("school")
             if not school or school == "general":
                 continue
-
-            combined = comm_text  # the commentary itself is what we analyze
-            if not concept_pattern.search(combined):
+            m = concept_pattern.search(comm_text)
+            if not m:
                 continue
-
-            # Extract a window around the mention rather than the whole
-            # (sometimes very long) commentary, to keep embeddings focused
-            m = concept_pattern.search(combined)
             start = max(0, m.start() - window_chars // 2)
-            end = min(len(combined), m.end() + window_chars // 2)
-            snippet = combined[start:end].strip()
-
+            end = min(len(comm_text), m.end() + window_chars // 2)
+            snippet = comm_text[start:end].strip()
             if len(snippet) > 30:
                 by_school[school].append(snippet)
+
+        # Path 2: top-level text field (Buddhism, Jainism root texts)
+        source = r.get("source", "")
+        school = TEXT_FIELD_SCHOOL_MAP.get(source)
+        if school:
+            top_text = r.get("text", "") or ""
+            m = concept_pattern.search(top_text)
+            if m:
+                start = max(0, m.start() - window_chars // 2)
+                end = min(len(top_text), m.end() + window_chars // 2)
+                snippet = top_text[start:end].strip()
+                if len(snippet) > 30:
+                    by_school[school].append(snippet)
 
     return by_school
 
