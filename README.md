@@ -197,8 +197,25 @@ A few things stand out. Madhva leans heavily on direct scriptural citation, six 
 
 This measures argumentative style, not philosophical content, and is a first-pass heuristic using simple text statistics, not a rigorous linguistic study. A few commentators in the corpus have too little continuous prose captured (short gloss-style annotations rather than full passages) for this kind of analysis to be meaningful, and are excluded from this table for that reason. Run the script yourself with `python stylometric_comparison.py` to see the full output, including which commentators were excluded and why.
 
-# Embedding-based disagreement detection experiment
-We also explored embedding-based disagreement detection as an extraction-free complement to the LLM-tagging approach: grouping commentary passages by school based on literal concept-name matching, embedding them locally with a sentence-transformer model, and measuring cosine distance between school centroids. Early results were inconclusive, sample sizes per school ranged from one to forty passages depending on the concept and how literally each school's commentators happened to phrase that concept, which is too small and too dependent on surface wording to draw reliable conclusions. We consider this a promising direction for future work once paired with a more inclusive passage-matching strategy (synonym expansion, embedding-based passage retrieval rather than literal string matching) and larger sample sizes, rather than a result ready to report now.
+## Preliminary: embedding-based disagreement (exploratory, not validated)
+
+As an extraction-free complement to the LLM-tagged graph, `embedding_disagreement_finder.py` groups commentary passages by school using literal concept-name matching, embeds them locally with a sentence-transformer model, and measures cosine distance between each school's centroid. This needs no API key and runs entirely offline after the first model download.
+
+An early run across seven concepts gave this preliminary ranking:
+
+| Concept | Avg. cross-school distance | Schools compared | Most divergent pair |
+|---|---|---|---|
+| moksha | 0.359 | 3 | Advaita vs Dvaita |
+| jiva | 0.313 | 3 | Advaita vs Vishishtadvaita |
+| maya | 0.269 | 6 | Dvaitadvaita vs Jain Digambara |
+| atman | 0.257 | 4 | Advaita vs Vishishtadvaita |
+| dharma | 0.203 | 6 | Achintya Bhedabheda vs Jain Digambara |
+| karma | 0.150 | 6 | Achintya Bhedabheda vs Dvaitadvaita |
+| brahman | 0.132 | 5 | Achintya Bhedabheda vs Advaita |
+
+This is genuinely a preliminary result, not a validated finding, for one important reason worth stating plainly: brahman ranks lowest here despite being the single most contested concept in the LLM-tagged graph (570 contested pairs found, with atman-brahman the single most frequent). That direct disagreement between the two methods is itself informative. It most likely means the literal string-matching used to find passages mentioning "brahman" is missing most relevant passages that instead say "the Supreme," "the Absolute," or use a Sanskrit term, leaving each school's sample too small and too dependent on incidental phrasing to be a fair comparison. Sample sizes here range from one to forty-seven passages per school per concept, well below what would be needed for a reliable result.
+
+We include this table to show the method and invite improvement, not as a claim about which concepts are most contested. A more inclusive passage-matching strategy (synonym expansion or embedding-based passage retrieval rather than literal string matching) and substantially larger samples would be needed before this method's rankings should be trusted or compared against the LLM-tagging results in Section [X].
 
 ## Known limitations
 
