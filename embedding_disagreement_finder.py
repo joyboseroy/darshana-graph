@@ -96,30 +96,37 @@ TEXT_FIELD_SCHOOL_MAP = {
 }
 
 
-def passages_mentioning_concept(records, concept, window_chars=400):
+def passages_mentioning_concept(records, concept, window_chars=400, group_by="school"):
     """
     Find passages (verse text or commentary text) that mention the concept
-    by name, grouped by school. Returns {school: [passage_text, ...]}.
+    by name, grouped by school OR by individual commentator depending on
+    group_by. Returns {group_key: [passage_text, ...]}.
+
+    group_by="school" (default): cross-tradition comparison, as before.
+    group_by="commentator": within-tradition comparison, e.g. do Sridhara
+    and Anandagiri (both Advaita) actually write similarly about a concept,
+    or does individual commentator style/era matter as much as school?
 
     Searches both:
       1. commentaries[].text, for traditions that use named commentators
-         (the original behavior)
       2. top-level "text", for traditions (Buddhism, Jainism) that store
-         primary content directly rather than via commentaries, using a
-         cross-tradition term list so e.g. searching "atman" also finds
-         the Theravada discussion of "anatta"
+         primary content directly rather than via commentaries
     """
     search_terms = CONCEPT_CROSS_TRADITION_TERMS.get(concept.lower(), [concept])
     concept_pattern = re.compile("|".join(re.escape(t) for t in search_terms), re.IGNORECASE)
-    by_school = defaultdict(list)
+    by_group = defaultdict(list)
 
     for r in records:
-        # Path 1: commentaries field (Vedanta-style named commentary)
         for c in r.get("commentaries", []) or []:
             comm_text = c.get("text", "") or ""
-            school = c.get("school")
-            if not school or school == "general":
-                continue
+            if group_by == "school":
+                key = c.get("school")
+                if not key or key == "general":
+                    continue
+            else:
+                key = c.get("commentator")
+                if not key:
+                    continue
             m = concept_pattern.search(comm_text)
             if not m:
                 continue
@@ -127,22 +134,22 @@ def passages_mentioning_concept(records, concept, window_chars=400):
             end = min(len(comm_text), m.end() + window_chars // 2)
             snippet = comm_text[start:end].strip()
             if len(snippet) > 30:
-                by_school[school].append(snippet)
+                by_group[key].append(snippet)
 
-        # Path 2: top-level text field (Buddhism, Jainism root texts)
-        source = r.get("source", "")
-        school = TEXT_FIELD_SCHOOL_MAP.get(source)
-        if school:
-            top_text = r.get("text", "") or ""
-            m = concept_pattern.search(top_text)
-            if m:
-                start = max(0, m.start() - window_chars // 2)
-                end = min(len(top_text), m.end() + window_chars // 2)
-                snippet = top_text[start:end].strip()
-                if len(snippet) > 30:
-                    by_school[school].append(snippet)
+        if group_by == "school":
+            source = r.get("source", "")
+            school = TEXT_FIELD_SCHOOL_MAP.get(source)
+            if school:
+                top_text = r.get("text", "") or ""
+                m = concept_pattern.search(top_text)
+                if m:
+                    start = max(0, m.start() - window_chars // 2)
+                    end = min(len(top_text), m.end() + window_chars // 2)
+                    snippet = top_text[start:end].strip()
+                    if len(snippet) > 30:
+                        by_group[school].append(snippet)
 
-    return by_school
+    return by_group
 
 
 def compute_school_disagreement(model, by_school, max_passages_per_school=40):
@@ -184,6 +191,8 @@ def main():
     parser.add_argument("--rank-concepts", nargs="+", default=None,
                         help="Rank multiple concepts by overall school disagreement")
     parser.add_argument("--max-passages", type=int, default=40)
+    parser.add_argument("--within-school", default=None,
+                        help="Compare individual commentators within one school, e.g. advaita")
     args = parser.parse_args()
 
     print("Loading sentence-transformers model (first run downloads ~80MB)...")
@@ -194,7 +203,40 @@ def main():
     records = load_all_corpus_records()
     print(f"Loaded {len(records)} records\n")
 
-    if args.concept:
+    if args.within_school:
+        target_school = args.within_school.lower()
+        commentators_in_school = [
+            c for c, schools in SCHOOL_TO_COMMENTATOR_HINTS.items()
+        ]
+        # Find which commentators belong to the requested school by
+        # checking the hint map, falling back to scanning the corpus
+        # directly if the school isn't in our small hint dict.
+        school_commentators = SCHOOL_TO_COMMENTATOR_HINTS.get(target_school)
+        if not school_commentators:
+            print(f"No known commentator list for school '{target_school}'.")
+            print(f"Known schools: {list(SCHOOL_TO_COMMENTATOR_HINTS.keys())}")
+            return
+
+        concept = args.concept or "atman"
+        print(f"Within-school comparison: {target_school}, concept: {concept}\n")
+        by_commentator = passages_mentioning_concept(records, concept, group_by="commentator")
+        by_commentator = {c: p for c, p in by_commentator.items() if c in school_commentators}
+
+        print(f"Commentators found: {list(by_commentator.keys())}")
+        for c, passages in by_commentator.items():
+            print(f"  {c}: {len(passages)} passages")
+        print()
+
+        if len(by_commentator) < 2:
+            print("Not enough commentators with mentions for a comparison.")
+            return
+
+        pairs, counts = compute_school_disagreement(model, by_commentator, args.max_passages)
+        print(f"Pairwise disagreement WITHIN {target_school} (same school, different commentators):\n")
+        for a, b, dist in pairs:
+            print(f"  {a} vs {b}: {dist:.4f}  ({counts[a]} vs {counts[b]} passages)")
+
+    elif args.concept:
         by_school = passages_mentioning_concept(records, args.concept)
         print(f"Concept: {args.concept}")
         print(f"Schools with mentions: {list(by_school.keys())}")

@@ -58,6 +58,45 @@ REFUTATION_RE = re.compile("|".join(REFUTATION_MARKERS), re.IGNORECASE)
 SENTENCE_SPLIT_RE = re.compile(r'[.!?]+\s+')
 
 
+def split_into_sentences(text):
+    """
+    Split text into sentences. Falls back to a fixed-width pseudo-sentence
+    split (every ~20 words) when the text has no recognizable sentence-
+    ending punctuation at all, which happens for some commentators whose
+    captured text is short gloss-style annotations rather than full
+    prose with standard punctuation. Without this fallback, words-per-
+    sentence is undefined (reported as near-zero) for those commentators,
+    which looked like a real stylistic finding but was actually a parsing
+    gap.
+    """
+    raw_sentences = [s for s in SENTENCE_SPLIT_RE.split(text) if s.strip()]
+    if len(raw_sentences) >= 2:
+        return raw_sentences
+
+    words = text.split()
+    if len(words) < 5:
+        return [text] if text.strip() else []
+
+    PSEUDO_SENTENCE_WORDS = 20
+    return [
+        " ".join(words[i:i + PSEUDO_SENTENCE_WORDS])
+        for i in range(0, len(words), PSEUDO_SENTENCE_WORDS)
+    ]
+
+
+TEXT_FIELD_SOURCE_MAP = {
+    "sn_nikaya": "theravada",
+    "kn_sutta_nipata_nikaya": "theravada",
+    "kn_khuddakapatha_nikaya": "theravada",
+    "kn_dhammapada_nikaya": "theravada",
+    "kn_itivuttaka_nikaya": "theravada",
+    "kn_udana_nikaya": "theravada",
+    "sutrakritanga": "jain_common",
+    "acaranga_sutra": "jain_common",
+    "tattvartha_sutra": "jain_common",
+}
+
+
 def load_all_corpus_records():
     records = []
     for f in sorted(CORPUS_DIR.glob("*.json")):
@@ -72,6 +111,30 @@ def load_all_corpus_records():
     return records
 
 
+def collect_passages_by_commentator(records, by="commentator"):
+    """
+    Group passages by commentator (default) or by source-derived label
+    (for Buddhism/Jainism, which store content in top-level "text" rather
+    than commentaries[], using TEXT_FIELD_SOURCE_MAP as the label).
+    """
+    by_key = defaultdict(list)
+    for r in records:
+        for c in r.get("commentaries", []) or []:
+            key = c.get(by)
+            text = c.get("text", "")
+            if key and text:
+                by_key[key].append(text)
+
+        source = r.get("source", "")
+        label = TEXT_FIELD_SOURCE_MAP.get(source)
+        if label:
+            top_text = r.get("text", "") or ""
+            if top_text:
+                by_key[label if by != "commentator" else source].append(top_text)
+
+    return by_key
+
+
 def analyze_commentator(passages):
     """Compute stylometric stats for one commentator's full set of passages."""
     total_words = 0
@@ -80,12 +143,18 @@ def analyze_commentator(passages):
     quotation_hits = 0
     refutation_hits = 0
     total_chars = 0
+    used_fallback_split = 0
 
     for text in passages:
         if not text:
             continue
         total_chars += len(text)
-        sentences = [s for s in SENTENCE_SPLIT_RE.split(text) if s.strip()]
+
+        has_real_punctuation = len(SENTENCE_SPLIT_RE.split(text)) >= 2
+        if not has_real_punctuation:
+            used_fallback_split += 1
+
+        sentences = split_into_sentences(text)
         total_sentences += len(sentences)
 
         words = re.findall(r"[a-zA-Z']+", text.lower())
@@ -108,6 +177,7 @@ def analyze_commentator(passages):
         "vocabulary_diversity": len(all_words) / max(total_words, 1),
         "pct_passages_with_quotation": 100 * quotation_hits / n_passages,
         "pct_passages_with_refutation": 100 * refutation_hits / n_passages,
+        "pct_used_fallback_split": 100 * used_fallback_split / n_passages,
     }
 
 
@@ -123,13 +193,7 @@ def main():
     records = load_all_corpus_records()
     print(f"Loaded {len(records)} records\n")
 
-    by_commentator = defaultdict(list)
-    for r in records:
-        for c in r.get("commentaries", []) or []:
-            commentator = c.get("commentator")
-            text = c.get("text", "")
-            if commentator and text:
-                by_commentator[commentator].append(text)
+    by_commentator = collect_passages_by_commentator(records, by="commentator")
 
     if args.commentators:
         by_commentator = {k: v for k, v in by_commentator.items() if k in args.commentators}
@@ -147,12 +211,13 @@ def main():
         return
 
     print(f"{'Commentator':<20} {'Passages':>9} {'AvgChars':>9} {'Words/Sent':>11} "
-          f"{'VocabDiv':>9} {'%Quote':>8} {'%Refute':>8}")
-    print("-" * 85)
+          f"{'VocabDiv':>9} {'%Quote':>8} {'%Refute':>8} {'%NoPunct':>9}")
+    print("-" * 95)
     for commentator, s in sorted(results.items(), key=lambda x: -x[1]["n_passages"]):
         print(f"{commentator:<20} {s['n_passages']:>9} {s['avg_chars_per_passage']:>9.0f} "
               f"{s['avg_words_per_sentence']:>11.1f} {s['vocabulary_diversity']:>9.3f} "
-              f"{s['pct_passages_with_quotation']:>7.1f}% {s['pct_passages_with_refutation']:>7.1f}%")
+              f"{s['pct_passages_with_quotation']:>7.1f}% {s['pct_passages_with_refutation']:>7.1f}% "
+              f"{s['pct_used_fallback_split']:>8.1f}%")
 
     print("\nNotes:")
     print("  AvgChars: average commentary length per passage (longer = more elaboration)")
@@ -160,6 +225,9 @@ def main():
     print("  VocabDiv: unique words / total words (higher = more varied vocabulary, less repetitive)")
     print("  %Quote: fraction of passages containing an explicit scripture-citation marker")
     print("  %Refute: fraction of passages containing an explicit refutation/opponent marker")
+    print("  %NoPunct: fraction of passages with no sentence-ending punctuation, using a 20-word")
+    print("            pseudo-sentence fallback instead. High %NoPunct means Words/Sent is less")
+    print("            meaningful for that commentator (likely short gloss-style text, not full prose).")
     print("\nThis is a first-pass heuristic, not a rigorous linguistic study.")
     print("Treat differences as a starting point for closer reading, not a final claim.")
 
