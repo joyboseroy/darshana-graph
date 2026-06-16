@@ -131,6 +131,28 @@ python audit_tagged.py
 python prepare_hf_dataset.py
 ```
 
+## Example: the same verse, five readings
+
+Bhagavad Gita 2.20 describes the soul as unborn, eternal, and untouched by the body's death. All five schools in this dataset agree on that much. Where they sharply diverge is on what this soul's relationship to Brahman, the ultimate reality, actually is.
+
+**Shankara (Advaita Vedanta)**: "The Self spoken of here is, in its true nature, not different from Brahman at all. What appears as an individual soul, distinct and embodied, is a limitation imposed by ignorance. Remove the ignorance, and what remains is Brahman alone, without a second."
+
+**Ramanuja (Vishishtadvaita)**: "The soul is eternally real and eternally distinct from the Lord, even in liberation. It is not annihilated into Brahman but exists as an eternal mode, dependent on and inseparable from the Supreme, the way light depends on its source without becoming identical to it."
+
+**Madhva (Dvaita)**: "This verse proves the soul's eternal, irreducible distinctness. There is no stage, in bondage or in release, where the individual soul becomes one with God. To read identity into this verse is to ignore its plain sense in favor of a borrowed doctrine."
+
+**Prabhupada (Achintya Bhedabheda)**: "The living entity is an eternal, individual spirit soul, simultaneously one with and different from the Supreme, in a manner beyond ordinary logical resolution."
+
+Three schools call this the same one Self appearing as many. Two schools call it eternally distinct souls dependent on or related to one Supreme. The verse never changes. The reading does.
+
+A second example, Bhagavad Gita 18.61, on whether the Lord directing all beings through maya overrides individual free will:
+
+**Shankara**: maya is the power of ignorance through which the one Self appears divided into many; in truth, nothing moves and no one is directed.
+
+**Ramanuja**: the Lord directs each soul strictly according to that soul's own past actions, using maya as the instrument of just governance, never overriding the soul's own agency.
+
+**Madhva**: maya is not illusion but God's real power to ordain the movements of real, distinct souls, an assertion of divine sovereignty rather than a denial of individual reality.
+
 ## Known limitations
 
 See the "Known limitations" section of the
