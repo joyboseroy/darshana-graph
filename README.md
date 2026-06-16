@@ -197,25 +197,25 @@ A few things stand out. Madhva leans heavily on direct scriptural citation, six 
 
 This measures argumentative style, not philosophical content, and is a first-pass heuristic using simple text statistics, not a rigorous linguistic study. A few commentators in the corpus have too little continuous prose captured (short gloss-style annotations rather than full passages) for this kind of analysis to be meaningful, and are excluded from this table for that reason. Run the script yourself with `python stylometric_comparison.py` to see the full output, including which commentators were excluded and why.
 
-## Preliminary: embedding-based disagreement (exploratory, not validated)
+## Embeddings vs LLM tagging: two methods measuring different things
 
-As an extraction-free complement to the LLM-tagged graph, `embedding_disagreement_finder.py` groups commentary passages by school using literal concept-name matching, embeds them locally with a sentence-transformer model, and measures cosine distance between each school's centroid. This needs no API key and runs entirely offline after the first model download.
+A natural question once you have both an LLM-tagged graph and a passage corpus is whether a model-free method agrees with the LLM's findings. We tried this with `embedding_disagreement_finder.py`: group commentary passages by school using literal concept-name matching, embed them locally, and measure cosine distance between each school's centroid per concept.
 
-An early run across seven concepts gave this preliminary ranking:
-
-| Concept | Avg. cross-school distance | Schools compared | Most divergent pair |
+| Concept | Avg. cross-school distance | Schools compared | Reliable sample size? |
 |---|---|---|---|
-| moksha | 0.359 | 3 | Advaita vs Dvaita |
-| jiva | 0.313 | 3 | Advaita vs Vishishtadvaita |
-| maya | 0.269 | 6 | Dvaitadvaita vs Jain Digambara |
-| atman | 0.257 | 4 | Advaita vs Vishishtadvaita |
-| dharma | 0.203 | 6 | Achintya Bhedabheda vs Jain Digambara |
-| karma | 0.150 | 6 | Achintya Bhedabheda vs Dvaitadvaita |
-| brahman | 0.132 | 5 | Achintya Bhedabheda vs Advaita |
+| moksha | 0.363 | 7 | Mixed, some pairs thin |
+| jiva | 0.313 | 3 | No, 3 schools only, small samples |
+| maya | 0.289 | 7 | Mixed |
+| dharma | 0.277 | 8 | Mostly yes |
+| atman | 0.250 | 5 | No, samples range 1 to 47 passages |
+| karma | 0.162 | 7 | Mostly yes |
+| brahman | 0.153 | 6 | Yes, samples range 19 to 1,173 passages |
 
-This is genuinely a preliminary result, not a validated finding, for one important reason worth stating plainly: brahman ranks lowest here despite being the single most contested concept in the LLM-tagged graph (570 contested pairs found, with atman-brahman the single most frequent). That direct disagreement between the two methods is itself informative. It most likely means the literal string-matching used to find passages mentioning "brahman" is missing most relevant passages that instead say "the Supreme," "the Absolute," or use a Sanskrit term, leaving each school's sample too small and too dependent on incidental phrasing to be a fair comparison. Sample sizes here range from one to forty-seven passages per school per concept, well below what would be needed for a reliable result.
+The result is genuinely interesting, but not in the way we expected. Atman's ranking is unreliable, since the literal word "atman" appears far less often than equivalent phrasing like "the Self" or "soul," leaving some schools with single-digit sample sizes. Brahman's ranking, by contrast, rests on a solid sample (1,173 passages for Advaita alone, hundreds for other schools), and yet brahman shows the lowest embedding distance of any concept tested, despite being the single most contested concept in the LLM-tagged graph (570 contested pairs found, atman-brahman the most frequent).
 
-We include this table to show the method and invite improvement, not as a claim about which concepts are most contested. A more inclusive passage-matching strategy (synonym expansion or embedding-based passage retrieval rather than literal string matching) and substantially larger samples would be needed before this method's rankings should be trusted or compared against the LLM-tagging results in Section [X].
+We think this is a real finding rather than a failure of the method: schools can discuss the same concept in similar topical register, vocabulary, and sentence structure while asserting opposite metaphysical claims about it. An embedding model trained for topical and stylistic similarity has no particular reason to separate "X is identical to Y" from "X is distinct from Y" if both sentences otherwise read as typical philosophical prose about the same subject. This is a useful caution against treating off-the-shelf sentence embeddings as a proxy for philosophical agreement: semantic similarity of discussion is not the same thing as propositional agreement.
+
+Full per-school passage counts are reproducible via `python embedding_disagreement_finder.py --concept X`. Disentangling topical similarity from propositional agreement, perhaps via a model fine-tuned or prompted to embed claims rather than passages, is a meaningful direction for future work.
 
 ## Known limitations
 
