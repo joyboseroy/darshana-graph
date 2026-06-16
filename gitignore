@@ -1,0 +1,29 @@
+# Progress/resume files (transient scraping state, not useful to publish)
+corpus/*_progress.json
+
+# Backup files from in-place fixes
+corpus/*.bak
+corpus/*.bak2
+
+# Bilara-data is a large external clone, not part of this repo
+bilara-data/
+
+# gita/data clone and bhagavad-gita-api clone (external repos, not vendored)
+gita/
+bhagavad-gita-api/
+
+# Source PDFs (large, copyrighted in some cases, not redistributed here)
+*.pdf
+sbe01.txt
+sbe01.txt.gz
+sbe15.txt
+sbe15.txt.gz
+bg1972.txt
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS
+.DS_Store
