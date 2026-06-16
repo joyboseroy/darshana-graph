@@ -219,6 +219,45 @@ We think this is a real finding rather than a failure of the method: schools can
 
 Full per-school passage counts are reproducible via `python embedding_disagreement_finder.py --concept X`. Disentangling topical similarity from propositional agreement, perhaps via a model fine-tuned or prompted to embed claims rather than passages, is a meaningful direction for future work.
 
+## Insights from running the analysis scripts
+
+These are results from the stylometric and embedding scripts included in this repository, run on the corpus as released. Numbers are flagged where the underlying sample is thin or where sentence-level statistics are unreliable, rather than presented uniformly.
+
+### Citation versus refutation: two different ways to make an argument
+
+Across the eight commentators with enough data for a meaningful comparison, scriptural citation density and explicit refutation rate are moderately negatively correlated (Pearson r approximately -0.32 across all eight, -0.46 restricted to the four commentators with the cleanest sentence-level data: Shankara, Prabhupada, Srinivasa, and Pujyapada). Commentators who lean heavily on quoting scripture as proof tend to spend less time explicitly naming and refuting opponents, and vice versa. Madhva sits at one extreme (17.1% scripture citation, 2.0% refutation), Srinivasa at the other (0.7% citation, 42.0% refutation). With only eight data points this is suggestive rather than statistically conclusive, but it points at something real: there appear to be at least two distinct argumentative postures available within the same broad tradition, prove your point by accumulating textual authority, or prove your point by dismantling the alternative.
+
+### A school's argumentative posture can harden across generations
+
+Madhva (13th century, founder of Dvaita), Nimbarka (founder of the related Dvaitadvaita school), and Srinivasa (a later sub-commentator defending Dvaitadvaita) show a striking generational trend in refutation rate: 2.0%, 13.2%, and 42.0% respectively. This is consistent with a school's argumentative posture shifting over time from confidently citing scripture to extensively defending itself against rival schools, though we have not verified this against independent historical scholarship and present it as a pattern worth a specialist's attention rather than a settled claim.
+
+### The least and most polemical commentators in the corpus
+
+Restricting to the four commentators with the most reliable sentence-level data, Prabhupada (0.3% refutation rate) and Pujyapada (1.1%) are by far the least likely to explicitly name and refute an opposing view, while Srinivasa (42.0%) is the most. Shankara sits in between (7.2%). This is a small, reliable sample rather than a comprehensive ranking, since most other commentators in the corpus have too little continuous prose with standard punctuation for the sentence-level statistics to be trustworthy (see the `%NoPunct` diagnostic in the script's output).
+
+### The Pali Canon has its own internal genre structure
+
+Without any comparison to Hindu or Jain material at all, the six Pali Canon collections tagged in this corpus show real differences in passage length: the Dhammapada averages 31 characters per segment, the most compressed and aphoristic text in the set, while Samyutta Nikaya and Udana average 70-74 characters, consistent with their more discursive, doctrinally elaborated style. Sentence-level statistics (words per sentence) are not meaningful for any Pali Canon collection in this corpus, since 89-100% of segments lack standard sentence-ending punctuation by construction (they are typically single clauses or stock phrases rather than full paragraphs).
+
+### What we could not yet test
+
+Jainism's two major sub-traditions, Digambara and Shvetambara, are not separately distinguishable in the current corpus: the Tattvartha Sutra is tagged only under Pujyapada's Digambara commentary, with no Shvetambara commentator currently represented in the tagged data, even though Shvetambara acceptance of the text is mentioned in the dataset's documentation. A within-Advaita stylistic comparison (Shankara versus the corpus's other four nominally Advaita commentators: Sridhara, Anandagiri, Nilakantha, Dhanpati) is also not currently possible at the embedding level, since only Shankara's passages carry a populated `school` field in the tagged commentary data; the others are present in the corpus but not yet attributable to a specific school in a way the analysis scripts can use.
+
+## Future work
+
+Beyond fixing the gaps noted above, this corpus and pipeline support a substantial range of further work we have not attempted:
+
+- A formal, randomly sampled, multi-annotator precision evaluation of the LLM-tagged concept graph, which currently rests on informal spot-checking rather than a reported metric.
+- Tracing how the meaning of a single concept (such as maya) shifts across the roughly thirteen centuries separating Shankara from Prabhupada, using each commentator's known era as an additional axis alongside school.
+- Cross-tradition concept bridging: quantifying how much functional overlap exists between concepts traditionally treated as opposites or unrelated across traditions, such as Buddhist anatta and Vedantic atman, or dukkha and the Hindu and Jain treatments of bondage and suffering.
+- Reconstructing implied historical debates by pairing each commentator's explicit refutation passages with the specific rival-school passage most likely being refuted, surfacing arguments that were never written as direct dialogue but functioned as one.
+- A school-conditioned dialogue or question-answering system that draws only on a specific commentator's extracted concept relationships as its grounding, rather than general language model knowledge, to test whether a model can argue consistently from a specific historical position rather than merely describing it.
+- Transitive reasoning over the concept graph: given two directly asserted relationships, checking whether any third passage explicitly confirms or contradicts the logically implied relationship between concepts that were never directly compared by the original commentator.
+- A larger, more linguistically validated stylometric feature set, extending beyond the simple regular-expression and sentence-length statistics used here to syntactic complexity measures and a learned, rather than hand-specified, citation and refutation classifier.
+- Resolving the Jainism Digambara and Shvetambara tagging gap and the within-Advaita school-attribution gap noted above, both of which are data completeness issues rather than fundamental limitations of the approach.
+
+We would welcome contributions on any of these, or on directions we have not anticipated; the corpus and all analysis code are released specifically to make this kind of follow-on work possible.
+
 ## Known limitations
 
 See the "Known limitations" section of the
