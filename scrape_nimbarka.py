@@ -109,9 +109,11 @@ def parse_page(html, doc_id):
             srinivasa_header = h
 
     if nimbarka_header:
-        nimbarka_text = collect_section_text(nimbarka_header)
+        stop_markers = ["Śrīnivāsa", "Srinivasa", "rinivāsa"]
+        nimbarka_text = collect_section_text(nimbarka_header, stop_at_headers=stop_markers)
     if srinivasa_header:
-        srinivasa_text = collect_section_text(srinivasa_header)
+        nimbarka_markers = ["Nimb"]
+        srinivasa_text = collect_section_text(srinivasa_header, stop_at_headers=nimbarka_markers)
 
     # Boilerplate guard: if the captured text looks like site metadata
     # ("by Roma Bose | 1940 | ..."), it means collect_section_text walked
@@ -120,6 +122,15 @@ def parse_page(html, doc_id):
     if BOILERPLATE_RE.search(nimbarka_text):
         nimbarka_text = ""
     if BOILERPLATE_RE.search(srinivasa_text):
+        srinivasa_text = ""
+
+    # Minimum content length guard: real commentary is always more than a
+    # few words; anything shorter is likely a stray fragment, not genuine
+    # content, so treat it as missing rather than keep noise.
+    MIN_COMMENTARY_LENGTH = 15
+    if nimbarka_text and len(nimbarka_text) < MIN_COMMENTARY_LENGTH:
+        nimbarka_text = ""
+    if srinivasa_text and len(srinivasa_text) < MIN_COMMENTARY_LENGTH:
         srinivasa_text = ""
 
     # Comparative notes -- footnotes mentioning other schools
@@ -165,21 +176,24 @@ def parse_page(html, doc_id):
     return record, next_link
 
 
-def collect_section_text(header_tag):
+def collect_section_text(header_tag, stop_at_headers=None):
     """
-    Collect all paragraph text between this header and the next header.
-    Defensive: walks find_next_siblings (which skips over intervening non-tag
-    nodes safely) rather than find_next_sibling, and stops at the first
-    h1/h2/h3 OR at a horizontal rule (often used as a section break).
+    Collect all paragraph text between this header and the next boundary.
+    Defensive: walks find_next_siblings, stops at h1/h2/h3/hr, AND stops
+    early if it encounters another known section header's text content
+    (passed via stop_at_headers) even if it isn't marked as an h1-h3 tag,
+    since wisdomlib sometimes uses inconsistent heading levels.
     """
     parts = []
     for sib in header_tag.find_next_siblings():
         if sib.name in ("h1", "h2", "h3", "hr"):
             break
-        if sib.name in ("p", "blockquote", "div"):
-            text = sib.get_text(" ", strip=True)
-            if text:
-                parts.append(text)
+        text = sib.get_text(" ", strip=True) if sib.name in ("p", "blockquote", "div") else ""
+        if not text:
+            continue
+        if stop_at_headers and any(marker in text for marker in stop_at_headers):
+            break
+        parts.append(text)
     return " ".join(parts).strip()
 
 
