@@ -197,6 +197,9 @@ A few things stand out. Madhva leans heavily on direct scriptural citation, six 
 
 This measures argumentative style, not philosophical content, and is a first-pass heuristic using simple text statistics, not a rigorous linguistic study. A few commentators in the corpus have too little continuous prose captured (short gloss-style annotations rather than full passages) for this kind of analysis to be meaningful, and are excluded from this table for that reason. Run the script yourself with `python stylometric_comparison.py` to see the full output, including which commentators were excluded and why.
 
+# Embedding-based disagreement detection experiment
+We also explored embedding-based disagreement detection as an extraction-free complement to the LLM-tagging approach: grouping commentary passages by school based on literal concept-name matching, embedding them locally with a sentence-transformer model, and measuring cosine distance between school centroids. Early results were inconclusive, sample sizes per school ranged from one to forty passages depending on the concept and how literally each school's commentators happened to phrase that concept, which is too small and too dependent on surface wording to draw reliable conclusions. We consider this a promising direction for future work once paired with a more inclusive passage-matching strategy (synonym expansion, embedding-based passage retrieval rather than literal string matching) and larger sample sizes, rather than a result ready to report now.
+
 ## Known limitations
 
 See the "Known limitations" section of the
