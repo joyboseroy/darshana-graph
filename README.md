@@ -265,7 +265,7 @@ Several additional analyses are enabled by the existing corpus, graph, and scrip
 - Graph relation-type profiles and concept centrality (degree, PageRank) computed per school over the existing edge set
 - Cross-file duplicate-ID auditing as a general data-hygiene check beyond the within-file fix already applied
 - An ablation comparing extraction quality across LLMs of different scale on a small fixed verse sample
-- 
+
 We would welcome contributions on any of these, or on directions we have not anticipated; the corpus and all analysis code are released specifically to make this kind of follow-on work possible.
 
 ## Known limitations
