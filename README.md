@@ -153,6 +153,32 @@ A second example, Bhagavad Gita 18.61, on whether the Lord directing all beings 
 
 **Madhva**: maya is not illusion but God's real power to ordain the movements of real, distinct souls, an assertion of divine sovereignty rather than a denial of individual reality.
 
+## Example: pulled directly from the tagged graph data
+
+This isn't a hand-picked illustration. The script `generate_readme_examples.py` queries the actual tagged dataset and surfaces real disagreements with real evidence quotes.
+
+### Atman and Brahman: the central debate of Vedanta
+
+**Advaita Vedanta** (822 relevant passages found): holds atman and brahman are identical.
+
+**Vishishtadvaita** (191 relevant passages found): holds atman and brahman are distinct. From the text (Brahma Sutras): "Our text teaches that the creation of the aggregate of sentient and non-sentient things results from the mere wish of a being free from all connexion with non-sentient matter."
+
+**Dvaita** (57 relevant passages found): holds atman and brahman are distinct, but for a different reason than Vishishtadvaita. From the text (Brahma Sutras): "difference of degree is clearly seen in the bliss enjoyed by the souls from the best of men upwards to Brahma the four-faced."
+
+**Achintya Bhedabheda** (21 relevant passages found): holds atman and brahman are identical, in the specific devotional sense that "everything is born of Him, everything is sustained by Him, and everything, after annihilation, rests in Him."
+
+Three schools land on "identical," two land on "distinct," and they don't even agree with each other on what distinct means. That's the kind of disagreement this dataset is built to surface.
+
+### Atman and Jiva: is the individual soul the same as the self?
+
+**Advaita Vedanta** (39 relevant passages found): holds atman and jiva are distinct. From the text (Brahma Sutras): "the waking being may be either the original soul, or he may be God, or some other individual soul."
+
+**Vishishtadvaita** (12 relevant passages found): holds atman and jiva are identical. From the Bhagavad Gita: "the Jiva itself is eternal, indestructible, and incomprehensible."
+
+**Dvaita** (8 relevant passages found): holds atman and jiva are identical, but reads the relationship very differently within its broader system. From the text (Brahma Sutras): "Now, being but one individual he goes forth separated."
+
+Generate more examples yourself with `python generate_readme_examples.py --concept-a X --concept-b Y`, or run `--top-pairs N` to see the most contested concept pairs in the dataset.
+
 ## Known limitations
 
 See the "Known limitations" section of the
