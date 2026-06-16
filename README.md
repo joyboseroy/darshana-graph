@@ -256,6 +256,16 @@ Beyond fixing the gaps noted above, this corpus and pipeline support a substanti
 - A larger, more linguistically validated stylometric feature set, extending beyond the simple regular-expression and sentence-length statistics used here to syntactic complexity measures and a learned, rather than hand-specified, citation and refutation classifier.
 - Resolving the Jainism Digambara and Shvetambara tagging gap and the within-Advaita school-attribution gap noted above, both of which are data completeness issues rather than fundamental limitations of the approach.
 
+Several additional analyses are enabled by the existing corpus, graph, and scripts without requiring new data collection, but were not completed in this release:
+
+- School-distinctiveness ranking via embedding centroid divergence across a wider concept list than atman/brahman alone
+- A formal stylometry-based school classifier (logistic regression or random forest on citation/refutation/length features), pending a larger set of reliably-punctuated commentators than currently available
+- Within-Advaita stylistic comparison once Sridhara, Anandagiri, Nilakantha, and Dhanpati receive verified school attribution in the source data (see known gaps above); we deliberately avoided assigning this label ourselves without source verification
+- Century-stratified stylistic drift analysis, pending resolution of disputed dates for Nimbarka and Srinivasa
+- Graph relation-type profiles and concept centrality (degree, PageRank) computed per school over the existing edge set
+- Cross-file duplicate-ID auditing as a general data-hygiene check beyond the within-file fix already applied
+- An ablation comparing extraction quality across LLMs of different scale on a small fixed verse sample
+- 
 We would welcome contributions on any of these, or on directions we have not anticipated; the corpus and all analysis code are released specifically to make this kind of follow-on work possible.
 
 ## Known limitations
