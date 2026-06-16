@@ -219,6 +219,16 @@ We think this is a real finding rather than a failure of the method: schools can
 
 Full per-school passage counts are reproducible via `python embedding_disagreement_finder.py --concept X`. Disentangling topical similarity from propositional agreement, perhaps via a model fine-tuned or prompted to embed claims rather than passages, is a meaningful direction for future work.
 
+## What the contested-pairs data actually shows
+
+Running `generate_readme_examples.py --top-pairs 20` surfaces 253 contested concept pairs across the tagged graph. Two are worth a closer look, since both have enough passages per school to trust the pattern rather than just the headline.
+
+**Atman and brahman** remains the most contested pair, and the picture is more nuanced than a simple two-sided dispute. Advaita asserts identity (822 passages). Dvaita and Vishishtadvaita both assert distinctness (57 and 191 passages respectively), but for different stated reasons: Vishishtadvaita grounds distinctness in an account of creation arising from the Lord's own undifferentiated will, while Dvaita grounds it in differences of degree among liberated souls. Dvaitadvaita, with the largest specific-school sample of any non-Advaita school here (139 passages), stakes out a genuine third position: not identity, not distinctness, but a "qualified aspect of" relationship that sits between the two extremes, consistent with its name (bhedabheda, difference-and-non-difference).
+
+**Atman and jiva** shows an interesting reversal of the usual pattern. Here it's Advaita that asserts distinctness (39 passages, the largest sample in this pair), while Dvaitadvaita (13 passages), Vishishtadvaita (12 passages), and Dvaita (8 passages) all assert some form of identity between the individual self and the individual soul. Advaita's distinctness claim here isn't a contradiction of its identity claim for atman-brahman, it reflects the standard Advaita move of treating jiva as the empirically conditioned, body-bound appearance of atman, with atman itself ultimately identical to brahman once that conditioning is seen through.
+
+Both examples are reproducible directly: `python generate_readme_examples.py --concept-a atman --concept-b brahman` (or jiva) shows the full passage breakdown per school.
+
 ## Insights from running the analysis scripts
 
 These are results from the stylometric and embedding scripts included in this repository, run on the corpus as released. Numbers are flagged where the underlying sample is thin or where sentence-level statistics are unreliable, rather than presented uniformly.
