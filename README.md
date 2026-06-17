@@ -335,6 +335,8 @@ over-use the `IS_QUALIFIED_ASPECT_OF` relation and the `general` school
 tag rather than committing to a more specific label, and partial coverage
 for Nimbarka/Srinivasa due to source-site reliability during scraping.
 
+- Buddhist material has no specific school attribution at all in the extracted graph: all 2,306 edges sourced from Buddhist passages carry a general school label, with zero edges anywhere attributed specifically to theravada, despite theravada being a valid label in the predefined vocabulary. This is more severe than the roughly 70% general-attribution rate documented elsewhere in the graph, and we suspect it relates to Buddhist passages standing alone as root text rather than being paired with a named, school-attributed commentary the way Vedanta passages are, though we have not confirmed this explanation. Until addressed, any Buddhist-focused use of this corpus should rely on text-level search (as in our stylometric analysis) rather than the extracted graph.
+
 ## License
 
 Code in this repository (the scraping, conversion, and tagging pipeline)
