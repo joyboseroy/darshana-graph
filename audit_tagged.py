@@ -13,6 +13,7 @@ Run:
 """
 
 import json
+import argparse
 from pathlib import Path
 from collections import Counter, defaultdict
 
@@ -33,9 +34,77 @@ def load_jsonl(path):
     return records
 
 
+def relation_profile_by_school(files, min_school_edges=20):
+    """
+    For each school with a specific (non-general) attribution, compute
+    what fraction of its edges use each relation type. This answers a
+    different question than the existing tension-preview: not "where do
+    schools disagree on a specific concept pair" but "does each school
+    have a distinctive overall argumentative signature in how it uses
+    the relation vocabulary at all".
+
+    Schools with fewer than min_school_edges specific-attribution edges
+    are excluded from the printed table, since a percentage computed on
+    a handful of edges is not meaningful; the excluded count is reported
+    so this exclusion is visible rather than silent.
+    """
+    school_relation_counts = defaultdict(Counter)
+    school_totals = Counter()
+
+    for f in files:
+        records = load_jsonl(f)
+        for r in records:
+            for rel in r.get("relationships", []):
+                school = rel.get("school")
+                relation = rel.get("relation")
+                if not school or school == "general" or not relation:
+                    continue
+                school_relation_counts[school][relation] += 1
+                school_totals[school] += 1
+
+    included = {s: n for s, n in school_totals.items() if n >= min_school_edges}
+    excluded = {s: n for s, n in school_totals.items() if n < min_school_edges}
+
+    all_relations = sorted({rel for counts in school_relation_counts.values() for rel in counts})
+
+    print("\n" + "=" * 70)
+    print("RELATION-TYPE PROFILE BY SCHOOL")
+    print(f"(schools with fewer than {min_school_edges} specific-attribution edges excluded)")
+    print("=" * 70)
+
+    if excluded:
+        print(f"\nExcluded for insufficient data: {', '.join(f'{s} ({n})' for s, n in excluded.items())}")
+
+    if not included:
+        print("\nNo school has enough specific-attribution edges for this analysis.")
+        return
+
+    print(f"\n{'School':<22}{'Total edges':>13}  " + "  ".join(f"{rel[:18]:>18}" for rel in all_relations))
+    for school, total in sorted(included.items(), key=lambda x: -x[1]):
+        counts = school_relation_counts[school]
+        row = f"{school:<22}{total:>13}  "
+        row += "  ".join(f"{100*counts.get(rel,0)/total:>17.1f}%" for rel in all_relations)
+        print(row)
+
+    print("\nEach cell is the percentage of that school's specific-attribution edges using that relation type.")
+    print("Compare row shapes, not just individual cells, to see whether a school's relation-vocabulary")
+    print("usage forms a distinctive overall signature rather than a single standout percentage.")
+
+
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--relation-profile", action="store_true",
+                        help="Print relation-type distribution normalized per school, instead of the default full audit")
+    parser.add_argument("--min-school-edges", type=int, default=20,
+                        help="Minimum specific-attribution edges for a school to appear in --relation-profile (default 20)")
+    args = parser.parse_args()
+
     files = sorted(TAGGED_DIR.glob("*.jsonl"))
     files = [f for f in files if f.name != "test_verse.jsonl"]
+
+    if args.relation_profile:
+        relation_profile_by_school(files, min_school_edges=args.min_school_edges)
+        return
 
     print("=" * 70)
     print("TAGGED OUTPUT AUDIT")
@@ -129,4 +198,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
