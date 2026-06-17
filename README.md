@@ -342,8 +342,6 @@ Restricting to the four commentators with the most reliable sentence-level data,
 
 Without any comparison to Hindu or Jain material at all, the six Pali Canon collections tagged in this corpus show real differences in passage length: the Dhammapada averages 31 characters per segment, the most compressed and aphoristic text in the set, while Samyutta Nikaya and Udana average 70-74 characters, consistent with their more discursive, doctrinally elaborated style. Sentence-level statistics (words per sentence) are not meaningful for any Pali Canon collection in this corpus, since 89-100% of segments lack standard sentence-ending punctuation by construction (they are typically single clauses or stock phrases rather than full paragraphs).
 
-### What we could not yet test
-
 ## What we could not yet test
 
 Jainism's two major sub-traditions, Digambara and Shvetambara, are not separately distinguishable in the current corpus: the Tattvartha Sutra is tagged only under Pujyapada's Digambara commentary, with no Shvetambara commentator currently represented in the tagged data, even though Shvetambara acceptance of the text is mentioned in the dataset's documentation. 
