@@ -213,7 +213,7 @@ A natural question once you have both an LLM-tagged graph and a passage corpus i
 | karma | 0.162 | 7 | Mostly yes |
 | brahman | 0.153 | 6 | Yes, samples range 19 to 1,173 passages |
 
-The result is genuinely interesting, but not in the way we expected. Atman's ranking is unreliable, since the literal word "atman" appears far less often than equivalent phrasing like "the Self" or "soul," leaving some schools with single-digit sample sizes. Brahman's ranking, by contrast, rests on a solid sample (1,173 passages for Advaita alone, hundreds for other schools), and yet brahman shows the lowest embedding distance of any concept tested, despite being the single most contested concept in the LLM-tagged graph (570 contested pairs found, atman-brahman the most frequent).
+The result is genuinely interesting, but not in the way we expected. Atman's ranking is unreliable, since the literal word "atman" appears far less often than equivalent phrasing like "the Self" or "soul," leaving some schools with single-digit sample sizes. Brahman's ranking, by contrast, rests on a solid sample (1,173 passages for Advaita alone, hundreds for other schools), and yet brahman shows the lowest embedding distance of any concept tested, despite being the single most contested concept in the LLM-tagged graph (253 contested pairs found, atman-brahman the most frequent).
 
 We think this is a real finding rather than a failure of the method: schools can discuss the same concept in similar topical register, vocabulary, and sentence structure while asserting opposite metaphysical claims about it. An embedding model trained for topical and stylistic similarity has no particular reason to separate "X is identical to Y" from "X is distinct from Y" if both sentences otherwise read as typical philosophical prose about the same subject. This is a useful caution against treating off-the-shelf sentence embeddings as a proxy for philosophical agreement: semantic similarity of discussion is not the same thing as propositional agreement.
 
@@ -344,7 +344,13 @@ Without any comparison to Hindu or Jain material at all, the six Pali Canon coll
 
 ### What we could not yet test
 
-Jainism's two major sub-traditions, Digambara and Shvetambara, are not separately distinguishable in the current corpus: the Tattvartha Sutra is tagged only under Pujyapada's Digambara commentary, with no Shvetambara commentator currently represented in the tagged data, even though Shvetambara acceptance of the text is mentioned in the dataset's documentation. A within-Advaita stylistic comparison (Shankara versus the corpus's other four nominally Advaita commentators: Sridhara, Anandagiri, Nilakantha, Dhanpati) is also not currently possible at the embedding level, since only Shankara's passages carry a populated `school` field in the tagged commentary data; the others are present in the corpus but not yet attributable to a specific school in a way the analysis scripts can use.
+## What we could not yet test
+
+Jainism's two major sub-traditions, Digambara and Shvetambara, are not separately distinguishable in the current corpus: the Tattvartha Sutra is tagged only under Pujyapada's Digambara commentary, with no Shvetambara commentator currently represented in the tagged data, even though Shvetambara acceptance of the text is mentioned in the dataset's documentation. 
+
+A within-Advaita stylistic comparison (Shankara versus the corpus's other four nominally Advaita commentators: Sridhara, Anandagiri, Nilakantha, Dhanpati) is also not currently possible at the embedding level, since only Shankara's passages carry a populated `school` field in the tagged commentary data; the others are present in the corpus but not yet attributable to a specific school in a way the analysis scripts can use.
+
+A third, more severe gap is documented separately above: the extracted graph has zero specific school attribution anywhere for Buddhist material (see "Buddhism stands apart..." and the Known Limitations section), which is a stronger version of the general-attribution problem rather than a parallel case to the two gaps above.
 
 ## Future work
 
@@ -378,8 +384,12 @@ See the "Known limitations" section of the
 accounting. In short: no human expert review, single-pass LLM tagging
 with an estimated 70-85% precision, a tendency for the tagging model to
 over-use the `IS_QUALIFIED_ASPECT_OF` relation and the `general` school
-tag rather than committing to a more specific label, and partial coverage
-for Nimbarka/Srinivasa due to source-site reliability during scraping.
+tag rather than committing to a more specific label, partial coverage
+for Nimbarka/Srinivasa due to source-site reliability during scraping,
+and a complete absence of specific school attribution for Buddhist
+material (see "Why Pali Canon material shows a 0.0% refutation rate"
+above for the related stylometric gap, and the limitations note further
+up this page for the graph-attribution gap specifically).
 
 - Buddhist material has no specific school attribution at all in the extracted graph: all 2,306 edges sourced from Buddhist passages carry a general school label, with zero edges anywhere attributed specifically to theravada, despite theravada being a valid label in the predefined vocabulary. This is more severe than the roughly 70% general-attribution rate documented elsewhere in the graph, and we suspect it relates to Buddhist passages standing alone as root text rather than being paired with a named, school-attributed commentary the way Vedanta passages are, though we have not confirmed this explanation. Until addressed, any Buddhist-focused use of this corpus should rely on text-level search (as in our stylometric analysis) rather than the extracted graph.
 
@@ -389,8 +399,9 @@ Code in this repository (the scraping, conversion, and tagging pipeline)
 is released under MIT. The corpus and graph data follow the licensing
 described in the HuggingFace dataset card, CC-BY-4.0 for the
 aggregation/tagging work, with underlying source texts retaining their
-original licenses (public domain, CC BY-NC 4.0 for Pali Canon
-translations, or explicit free-reproduction grants as noted per source).
+original licenses (public domain, CC0 for Sujato's Pali Canon
+translations via SuttaCentral, or explicit free-reproduction grants as
+noted per source).
 
 ## Acknowledgements
 
