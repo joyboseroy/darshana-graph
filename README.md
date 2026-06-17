@@ -276,6 +276,22 @@ Read this table with one caveat firmly in place: IS_QUALIFIED_ASPECT_OF dominate
 
 That said, one pattern survives the caveat: Advaita's IS_IDENTICAL_TO rate (30.0%) is more than double every other school's, which is an aggregate, relation-vocabulary-level echo of the same atman-brahman identity claim already documented at the single-concept-pair level elsewhere in this corpus, arrived at here through a completely different aggregation (whole-school relation usage rather than one contested pair). That two independent slices of the same graph agree is a small but genuine cross-check on the extraction pipeline, not just a restatement of one finding.
 
+## The IS_QUALIFIED_ASPECT_OF over-triggering is not school-specific
+
+Running `audit_tagged.py --relation-profile-by-text` breaks down relation-type usage by source text rather than by school, testing whether the already-documented IS_QUALIFIED_ASPECT_OF over-representation (see paper Section 5.3) is driven by which school wrote a commentary or by something about the root text itself. The answer is unambiguous: every one of the 28 source texts with sufficient data shows IS_QUALIFIED_ASPECT_OF as the most or second-most frequent relation, regardless of tradition, language, or genre.
+
+| Source text | Total edges | IS_QUALIFIED_ASPECT_OF | IS_CAUSE_OF | IS_DISTINCT_FROM |
+|---|---|---|---|---|
+| Bhagavad Gita | 4,550 | 50.8% | 18.8% | 12.2% |
+| Brahma Sutras | 7,737 | 42.6% | 20.5% | 19.5% |
+| Yoga Sutras | 1,062 | 55.9% | 17.9% | 11.8% |
+| Tattvartha Sutra (Jain) | 1,023 | 59.5% | 17.9% | 16.0% |
+| Samyutta Nikaya | 1,767 | 33.1% | 26.3% | 25.6% |
+| Dhammapada | 106 | 28.3% | 37.7% | 21.7% |
+| Acaranga Sutra (Jain) | 159 | 51.6% | 27.0% | 15.1% |
+
+This rules out a school-specific cause: the over-triggering appears at similar intensity in Hindu sutra literature, Hindu devotional poetry, Jain canonical texts, and Pali Buddhist suttas alike, four traditions with no shared commentarial lineage. The likely explanation is that the model defaults to this label when the relationship between two concepts is real but underspecified by the immediate textual context, which happens at a similar baseline rate regardless of which tradition or language the source text comes from. This points future prompt engineering toward addressing the model's general handling of relational uncertainty, rather than tuning per-tradition or per-school prompting.
+
 ## Insights from running the analysis scripts
 
 These are results from the stylometric and embedding scripts included in this repository, run on the corpus as released. Numbers are flagged where the underlying sample is thin or where sentence-level statistics are unreliable, rather than presented uniformly.
