@@ -229,6 +229,53 @@ Running `generate_readme_examples.py --top-pairs 20` surfaces 253 contested conc
 
 Both examples are reproducible directly: `python generate_readme_examples.py --concept-a atman --concept-b brahman` (or jiva) shows the full passage breakdown per school.
 
+## The most contested concepts in the corpus, ranked
+
+Running `generate_readme_examples.py --top-pairs 20` against the full tagged graph surfaces 253 contested concept pairs in total (pairs where two or more schools assert a different relation type for the same two concepts). The top 20 by number of distinct schools weighing in:
+
+| Rank | Concept pair | Schools involved |
+|---|---|---|
+| 1 | atman-soul | 6 |
+| 2 | atman-jiva | 5 |
+| 3 | atman-brahman | 5 |
+| 4 | atman-body | 5 |
+| 5 | dharma-moksha | 5 |
+| 6 | atman-maya | 5 |
+| 7 | karma-moksha | 5 |
+| 8 | dharma-karma | 5 |
+| 9 | atman-moksha | 5 |
+| 10 | atman-dharma | 5 |
+| 11 | brahman-karma | 5 |
+| 12 | atman-karma | 5 |
+| 13 | atman-paramatman | 5 |
+| 14 | brahman-dharma | 5 |
+| 15 | atman-samsara | 5 |
+| 16 | jiva-karma | 5 |
+| 17 | atman-manas | 4 |
+| 18 | brahman-moksha | 4 |
+| 19 | atman-ether | 4 |
+| 20 | brahman-maya | 4 |
+
+Atman appears in 13 of these 20 pairs, which is unsurprising given it sits at the center of Vedanta's defining dispute, but it does mean this ranking is partly a ranking of "what atman is contested in relation to" rather than 20 independently surprising disputes. Number of schools involved is also not the same as sample reliability: pairs like atman-brahman and atman-jiva rest on double- and triple-digit passage counts per school, while pairs near the bottom of this list, atman-manas, atman-ether, brahman-maya, rest on single-digit passage counts for at least one school and should be read as suggestive rather than confirmed. Full per-school passage counts and evidence quotes for any pair are reproducible directly: `python generate_readme_examples.py --concept-a X --concept-b Y`.
+
+## Relation-type usage by school
+
+Beyond which concepts schools disagree about, it's worth asking whether schools differ in how they use the relation vocabulary overall. Running `audit_tagged.py --relation-profile` against the tagged graph, restricted to schools with at least 20 specific-attribution edges, gives this breakdown:
+
+| School | Total edges | IS_QUALIFIED_ASPECT_OF | IS_IDENTICAL_TO | IS_DISTINCT_FROM | IS_CAUSE_OF |
+|---|---|---|---|---|---|
+| Vishishtadvaita | 1,051 | 73.4% | 8.4% | 8.8% | 8.1% |
+| Achintya Bhedabheda | 1,366 | 49.6% | 11.5% | 10.0% | 19.5% |
+| Dvaitadvaita | 1,824 | 46.9% | 9.0% | 20.3% | 20.7% |
+| Advaita | 3,930 | 36.8% | 30.0% | 14.8% | 15.5% |
+| Dvaita | 1,331 | 36.4% | 10.4% | 21.6% | 27.5% |
+
+(Samkhya, Yoga, Vaisheshika, and the two Jain schools are excluded here for having fewer than 20 specific-attribution edges each, too few for a percentage to be meaningful; see the script's full output for those raw counts.)
+
+Read this table with one caveat firmly in place: IS_QUALIFIED_ASPECT_OF dominates every single row, consistent with the global over-representation already documented in the paper (roughly 4.5 times more frequent than any other relation type across the whole graph), so this table is showing the same known extraction artifact at different intensities per school, not five independently clean philosophical signatures.
+
+That said, one pattern survives the caveat: Advaita's IS_IDENTICAL_TO rate (30.0%) is more than double every other school's, which is an aggregate, relation-vocabulary-level echo of the same atman-brahman identity claim already documented at the single-concept-pair level elsewhere in this corpus, arrived at here through a completely different aggregation (whole-school relation usage rather than one contested pair). That two independent slices of the same graph agree is a small but genuine cross-check on the extraction pipeline, not just a restatement of one finding.
+
 ## Insights from running the analysis scripts
 
 These are results from the stylometric and embedding scripts included in this repository, run on the corpus as released. Numbers are flagged where the underlying sample is thin or where sentence-level statistics are unreliable, rather than presented uniformly.
