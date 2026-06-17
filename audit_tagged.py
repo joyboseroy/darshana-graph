@@ -91,12 +91,73 @@ def relation_profile_by_school(files, min_school_edges=20):
     print("usage forms a distinctive overall signature rather than a single standout percentage.")
 
 
+def relation_profile_by_text(files, min_text_edges=20):
+    """
+    Same idea as relation_profile_by_school, but grouped by source_text
+    (e.g. brahma_sutras, bhagavad_gita, upanishads) instead of school.
+    This tests a different hypothesis: is the IS_QUALIFIED_ASPECT_OF
+    over-triggering driven by which SCHOOL wrote a commentary, or by
+    which ROOT TEXT is being commented on (e.g. terse sutra-style text
+    forcing the model to infer relationships from minimal context,
+    regardless of which school's commentator is speaking)? Unlike the
+    school-level cut, this one is NOT restricted to specific-attribution
+    edges, since source_text is independent of the school field and
+    available on every edge regardless of attribution quality.
+    """
+    text_relation_counts = defaultdict(Counter)
+    text_totals = Counter()
+
+    for f in files:
+        records = load_jsonl(f)
+        for r in records:
+            source_text = r.get("source")
+            for rel in r.get("relationships", []):
+                relation = rel.get("relation")
+                if not source_text or not relation:
+                    continue
+                text_relation_counts[source_text][relation] += 1
+                text_totals[source_text] += 1
+
+    included = {t: n for t, n in text_totals.items() if n >= min_text_edges}
+    excluded = {t: n for t, n in text_totals.items() if n < min_text_edges}
+
+    all_relations = sorted({rel for counts in text_relation_counts.values() for rel in counts})
+
+    print("\n" + "=" * 70)
+    print("RELATION-TYPE PROFILE BY SOURCE TEXT")
+    print(f"(source texts with fewer than {min_text_edges} edges excluded; ALL edges")
+    print(" included regardless of school attribution, unlike --relation-profile)")
+    print("=" * 70)
+
+    if excluded:
+        print(f"\nExcluded for insufficient data: {', '.join(f'{t} ({n})' for t, n in excluded.items())}")
+
+    if not included:
+        print("\nNo source text has enough edges for this analysis.")
+        return
+
+    print(f"\n{'Source text':<22}{'Total edges':>13}  " + "  ".join(f"{rel[:18]:>18}" for rel in all_relations))
+    for text, total in sorted(included.items(), key=lambda x: -x[1]):
+        counts = text_relation_counts[text]
+        row = f"{text:<22}{total:>13}  "
+        row += "  ".join(f"{100*counts.get(rel,0)/total:>17.1f}%" for rel in all_relations)
+        print(row)
+
+    print("\nIf IS_QUALIFIED_ASPECT_OF dominates similarly across different source texts regardless")
+    print("of which school's commentator wrote it, that points to root-text style (e.g. terse sutra")
+    print("phrasing forcing inference from minimal context) as a driver, not a school-specific artifact.")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--relation-profile", action="store_true",
-                        help="Print relation-type distribution normalized per school, instead of the default full audit")
+                        help="Print relation-type distribution normalized per school")
+    parser.add_argument("--relation-profile-by-text", action="store_true",
+                        help="Print relation-type distribution normalized per source text, independent of school")
     parser.add_argument("--min-school-edges", type=int, default=20,
                         help="Minimum specific-attribution edges for a school to appear in --relation-profile (default 20)")
+    parser.add_argument("--min-text-edges", type=int, default=20,
+                        help="Minimum edges for a source text to appear in --relation-profile-by-text (default 20)")
     args = parser.parse_args()
 
     files = sorted(TAGGED_DIR.glob("*.jsonl"))
@@ -104,6 +165,10 @@ def main():
 
     if args.relation_profile:
         relation_profile_by_school(files, min_school_edges=args.min_school_edges)
+        return
+
+    if args.relation_profile_by_text:
+        relation_profile_by_text(files, min_text_edges=args.min_text_edges)
         return
 
     print("=" * 70)
