@@ -7,6 +7,8 @@ LLM-assisted concept tagging constrained to a closed vocabulary.
 
 **Dataset on HuggingFace**: [joyboseroy/darshana-graph](https://huggingface.co/datasets/joyboseroy/darshana-graph)
 
+**Debate simulator tool**: [vada-simulator](https://github.com/joyboseroy/vada-simulator) — a citation-grounded multi-agent debate engine built on this graph, where agents representing different schools can only cite real graph edges, with fabricated or borrowed citations programmatically rejected.
+
 ## What this is
 
 Most digital resources for Indian philosophy are single-text,
@@ -358,7 +360,7 @@ Beyond fixing the gaps noted above, this corpus and pipeline support a substanti
 - Tracing how the meaning of a single concept (such as maya) shifts across the roughly thirteen centuries separating Shankara from Prabhupada, using each commentator's known era as an additional axis alongside school.
 - Cross-tradition concept bridging: quantifying how much functional overlap exists between concepts traditionally treated as opposites or unrelated across traditions, such as Buddhist anatta and Vedantic atman, or dukkha and the Hindu and Jain treatments of bondage and suffering.
 - Reconstructing implied historical debates by pairing each commentator's explicit refutation passages with the specific rival-school passage most likely being refuted, surfacing arguments that were never written as direct dialogue but functioned as one.
-- A school-conditioned dialogue or question-answering system that draws only on a specific commentator's extracted concept relationships as its grounding, rather than general language model knowledge, to test whether a model can argue consistently from a specific historical position rather than merely describing it.
+- A school-conditioned dialogue or question-answering system that draws only on a specific commentator's extracted concept relationships as its grounding, rather than general language model knowledge, to test whether a model can argue consistently from a specific historical position rather than merely describing it. **A first version of this exists: [vada-simulator](https://github.com/joyboseroy/vada-simulator), a multi-agent debate engine where each school can only cite real graph edges.** Open questions that remain: validating consistency over longer multi-turn exchanges, extending beyond two/three schools at once, and formal evaluation of whether cited evidence actually represents each school's strongest case.
 - Transitive reasoning over the concept graph: given two directly asserted relationships, checking whether any third passage explicitly confirms or contradicts the logically implied relationship between concepts that were never directly compared by the original commentator.
 - A larger, more linguistically validated stylometric feature set, extending beyond the simple regular-expression and sentence-length statistics used here to syntactic complexity measures and a learned, rather than hand-specified, citation and refutation classifier.
 - Resolving the Jainism Digambara and Shvetambara tagging gap and the within-Advaita school-attribution gap noted above, both of which are data completeness issues rather than fundamental limitations of the approach.
