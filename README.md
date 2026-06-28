@@ -7,6 +7,8 @@ LLM-assisted concept tagging constrained to a closed vocabulary.
 
 **Dataset on HuggingFace**: [joyboseroy/darshana-graph](https://huggingface.co/datasets/joyboseroy/darshana-graph)
 
+**Analysis and extensions**: The [darshana-temporal-analysis](github.com/joyboseroy/darshana-temporal-analysis) repository builds on this graph with temporal attribution analysis, structural homology experiments, diachronic sense disambiguation, and graph expansion to 45,155 edges with Mahayana and Theravada sources. Paper: arXiv:2026.XXXXX.
+
 **Debate simulator tool**: [vada-simulator](https://github.com/joyboseroy/vada-simulator) — a citation-grounded multi-agent debate engine built on this graph, where agents representing different schools can only cite real graph edges, with fabricated or borrowed citations programmatically rejected.
 
 ## What this is
@@ -391,7 +393,7 @@ material (see "Why Pali Canon material shows a 0.0% refutation rate"
 above for the related stylometric gap, and the limitations note further
 up this page for the graph-attribution gap specifically).
 
-- Buddhist material has no specific school attribution at all in the extracted graph: all 2,306 edges sourced from Buddhist passages carry a general school label, with zero edges anywhere attributed specifically to theravada, despite theravada being a valid label in the predefined vocabulary. This is more severe than the roughly 70% general-attribution rate documented elsewhere in the graph, and we suspect it relates to Buddhist passages standing alone as root text rather than being paired with a named, school-attributed commentary the way Vedanta passages are, though we have not confirmed this explanation. Until addressed, any Buddhist-focused use of this corpus should rely on text-level search (as in our stylometric analysis) rather than the extracted graph.
+- Buddhist material had no specific school attribution in the original extracted graph (v1). Version 3 of the graph (darshana_graph_v3.jsonl on HuggingFace) adds 16,068 Mahayana edges with labels madhyamaka/yogacara/mahayana/chan and 765 Theravada edges with label theravada, extracted from canonical Mahayana texts and Pali Nikaya excerpts. The original v1 graph (darshana_graph.jsonl) remains unchanged.
 
 ## License
 
