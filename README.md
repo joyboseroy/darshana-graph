@@ -7,7 +7,7 @@ LLM-assisted concept tagging constrained to a closed vocabulary.
 
 **Dataset on HuggingFace**: [joyboseroy/darshana-graph](https://huggingface.co/datasets/joyboseroy/darshana-graph)
 
-**Analysis and extensions**: The [darshana-temporal-analysis](github.com/joyboseroy/darshana-temporal-analysis) repository builds on this graph with temporal attribution analysis, structural homology experiments, diachronic sense disambiguation, and graph expansion to 45,155 edges with Mahayana and Theravada sources. Paper: arXiv:2026.XXXXX.
+**Analysis and extensions**: The [darshana-temporal-analysis](https://github.com/joyboseroy/darshana-temporal-analysis) repository builds on this graph with temporal attribution analysis, structural homology experiments, diachronic sense disambiguation, and graph expansion to 45,155 edges with Mahayana and Theravada sources. Paper: arXiv:2026.XXXXX.
 
 **Debate simulator tool**: [vada-simulator](https://github.com/joyboseroy/vada-simulator) — a citation-grounded multi-agent debate engine built on this graph, where agents representing different schools can only cite real graph edges, with fabricated or borrowed citations programmatically rejected.
 
