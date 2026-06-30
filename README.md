@@ -7,7 +7,9 @@ LLM-assisted concept tagging constrained to a closed vocabulary.
 
 **Dataset on HuggingFace**: [joyboseroy/darshana-graph](https://huggingface.co/datasets/joyboseroy/darshana-graph)
 
-**Analysis and extensions**: The [darshana-temporal-analysis](https://github.com/joyboseroy/darshana-temporal-analysis) repository builds on this graph with temporal attribution analysis, structural homology experiments, diachronic sense disambiguation, and graph expansion to 45,155 edges with Mahayana and Theravada sources. Paper: arXiv:2026.XXXXX.
+**Original dataset paper:** Darshana Graph: A Parallel Commentary Corpus for Comparative Indian Philosophy, with Stylometric and Exploratory Graph Analyses — arXiv:2606.18222
+
+**Analysis and extensions**: The [darshana-temporal-analysis](https://github.com/joyboseroy/darshana-temporal-analysis) repository builds on this graph with temporal attribution analysis, structural homology experiments, diachronic sense disambiguation, and graph expansion to 45,155 edges with Mahayana and Theravada sources. Paper: arXiv:2606.29070.
 
 **Debate simulator tool**: [vada-simulator](https://github.com/joyboseroy/vada-simulator) — a citation-grounded multi-agent debate engine built on this graph, where agents representing different schools can only cite real graph edges, with fabricated or borrowed citations programmatically rejected.
 
@@ -394,6 +396,35 @@ above for the related stylometric gap, and the limitations note further
 up this page for the graph-attribution gap specifically).
 
 - Buddhist material had no specific school attribution in the original extracted graph (v1). Version 3 of the graph (darshana_graph_v3.jsonl on HuggingFace) adds 16,068 Mahayana edges with labels madhyamaka/yogacara/mahayana/chan and 765 Theravada edges with label theravada, extracted from canonical Mahayana texts and Pali Nikaya excerpts. The original v1 graph (darshana_graph.jsonl) remains unchanged.
+
+## Citation
+'''
+@article{bose2026darshanagraph,
+  author = {Bose, Joy},
+  title = {Darshana Graph: A Parallel Commentary Corpus for Comparative
+           Indian Philosophy, with Stylometric and Exploratory Graph Analyses},
+  year = {2026},
+  journal = {arXiv preprint},
+  url = {https://arxiv.org/abs/2606.18222}
+}
+
+@article{bose2026attribution,
+  author = {Bose, Joy},
+  title = {Attribution Bias in Philosophical Knowledge Graphs:
+           Corpus Frequency versus Temporal Sourcing},
+  year = {2026},
+  journal = {arXiv preprint},
+  url = {https://arxiv.org/abs/2606.29070}
+}
+
+@dataset{bose2025darshana,
+  author = {Bose, Joy},
+  title = {Darshana Graph: A Knowledge Graph of Indian Philosophy},
+  year = {2025},
+  publisher = {HuggingFace},
+  url = {https://huggingface.co/datasets/joyboseroy/darshana-graph}
+}
+'''
 
 ## License
 
