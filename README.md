@@ -390,15 +390,15 @@ with an estimated 70-85% precision, a tendency for the tagging model to
 over-use the `IS_QUALIFIED_ASPECT_OF` relation and the `general` school
 tag rather than committing to a more specific label, partial coverage
 for Nimbarka/Srinivasa due to source-site reliability during scraping,
-and a complete absence of specific school attribution for Buddhist
-material (see "Why Pali Canon material shows a 0.0% refutation rate"
+and a near complete absence of specific school attribution for Buddhist
+material in the original v1 graph (see "Why Pali Canon material shows a 0.0% refutation rate"
 above for the related stylometric gap, and the limitations note further
 up this page for the graph-attribution gap specifically).
 
 - Buddhist material had no specific school attribution in the original extracted graph (v1). Version 3 of the graph (darshana_graph_v3.jsonl on HuggingFace) adds 16,068 Mahayana edges with labels madhyamaka/yogacara/mahayana/chan and 765 Theravada edges with label theravada, extracted from canonical Mahayana texts and Pali Nikaya excerpts. The original v1 graph (darshana_graph.jsonl) remains unchanged.
 
 ## Citation
-'''
+```bibtex
 @article{bose2026darshanagraph,
   author = {Bose, Joy},
   title = {Darshana Graph: A Parallel Commentary Corpus for Comparative
@@ -424,7 +424,7 @@ up this page for the graph-attribution gap specifically).
   publisher = {HuggingFace},
   url = {https://huggingface.co/datasets/joyboseroy/darshana-graph}
 }
-'''
+```
 
 ## License
 
