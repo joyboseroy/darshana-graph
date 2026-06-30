@@ -417,10 +417,10 @@ up this page for the graph-attribution gap specifically).
   url = {https://arxiv.org/abs/2606.29070}
 }
 
-@dataset{bose2025darshana,
+@dataset{bose2026darshana,
   author = {Bose, Joy},
   title = {Darshana Graph: A Knowledge Graph of Indian Philosophy},
-  year = {2025},
+  year = {2026},
   publisher = {HuggingFace},
   url = {https://huggingface.co/datasets/joyboseroy/darshana-graph}
 }
