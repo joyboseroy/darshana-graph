@@ -13,6 +13,8 @@ LLM-assisted concept tagging constrained to a closed vocabulary.
 
 **Debate simulator tool**: [vada-simulator](https://github.com/joyboseroy/vada-simulator) — a citation-grounded multi-agent debate engine built on this graph, where agents representing different schools can only cite real graph edges, with fabricated or borrowed citations programmatically rejected.
 
+**Auditing experiment**: [darshana-graphmind](https://github.com/joyboseroy/darshana-graphmind) — a LangGraph debate where agents may cite only claim records built from this graph, with a two-tier citation audit and judge calibration. Write-up: [I Tried to Make an AI Debate About Indian Philosophy Auditable](https://joyboseroy.medium.com/i-tried-to-make-an-ai-debate-about-indian-philosophy-auditable-the-hard-part-wasnt-the-ai-4514f19414d1).
+
 ## What this is
 
 Most digital resources for Indian philosophy are single-text,
